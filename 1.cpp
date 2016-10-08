@@ -1,14 +1,19 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <ctime>
 using namespace std;
 
 const int m = 2, n = 2;
+
 
 double genRandomMuller();
 double genRandomKnuth(int m, int n);
 
 int main() {
+	//	Set seed to rand();
+	srand(time(NULL));
+	
 	cout << "Muller:" << genRandomMuller() << endl;
 	cout << "Knuth:" << genRandomKnuth(m, n) << endl;
 	return 0;
@@ -17,6 +22,7 @@ int main() {
 
 double genRandomMuller() {
 	double u, v, s, x;
+
 
 	do {
 		u = ((double) rand() / (RAND_MAX));
@@ -35,7 +41,6 @@ double genRandomKnuth(int m, int n) {
 	lambda = m / n;
 
 	l = pow(M_E, -lambda);
-
 
 	do {
 		k += 1;

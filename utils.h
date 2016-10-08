@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cmath>
+#include <ctime>
 
 namespace utils {
 	double genRandomMuller() {
