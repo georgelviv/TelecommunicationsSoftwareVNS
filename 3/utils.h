@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <ctime>
 
 namespace utils {
 	double genRandomMuller() {
@@ -15,5 +16,15 @@ namespace utils {
 		x = u * (sqrt((-2 * log(s)) / s));
 	
 		return x;
+	}
+	void fillRandom (double arr[], int size) {
+		for (int i = 0; i < size; i++) {
+			arr[i] = genRandomMuller();
+		}
+	}
+	void printArray (double arr[], int size) {
+		for (int i = 0; i < size; i++) {
+			printf("%d: %f; \n", i + 1, arr[i]);
+		}
 	}
 }
