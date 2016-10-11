@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <cmath>
 
@@ -9,7 +10,9 @@ class MLS {
 	private:
 		std::vector<int> registerV;
 		std::vector<int> polynomial;
+		std::vector<std::string> mArray;
 		int c;
+		int sizeP;
 	public:
 		MLS (int size, std::vector<int> & polynomialV);
 		void printCurrent ();
@@ -17,12 +20,15 @@ class MLS {
 		void printC ();
 		void setNextC ();
 		void shiftRegister ();
+		void setMArray ();
+		void printMArray();
 		
 };
 
 MLS::MLS (int size, std::vector<int> & polynomialV) {
 	registerV.reserve(size);
 	int sum = 0;
+	sizeP = size;
 	do {
 		sum = 0;
 		for (int i = 0; i < size; i++) {
@@ -36,7 +42,29 @@ MLS::MLS (int size, std::vector<int> & polynomialV) {
 		polynomial.insert(polynomial.end(), polynomialV[i]);
 	}
 	
+	mArray.reserve(pow(2, size) - 1);
+	
 	this->setNextC();
+}
+
+void MLS::setMArray() {
+	int mSize = pow(2, sizeP) - 1;
+	std::string cur;
+	char numstr[21];
+	for (int i = 0; i < mSize; i++) {
+		cur = "";
+		for (int i = 0; i < registerV.size(); i++) {
+			cur += itoa(registerV[i], numstr, 10);
+		}
+		mArray.insert(mArray.end(), cur);
+		this->shiftRegister();
+	}
+}
+
+void MLS::printMArray() {
+	for (int i = 0; i < mArray.size(); i++) {
+		std::cout << mArray[i] << std::endl;
+	}
 }
 
 void MLS::printCurrent () {
@@ -54,9 +82,9 @@ void MLS::printPolynomial() {
 }
 
 void MLS::setNextC() {
-	c = registerV[polynomial[0]];
+	c = registerV[polynomial[0] - 1];
 	for (int i = 1; i < polynomial.size(); i++) {
-		c ^= registerV[polynomial[i]];
+		c =  c ^ registerV[polynomial[i] - 1];
 	}
 }
 
