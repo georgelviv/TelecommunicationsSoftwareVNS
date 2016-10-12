@@ -22,6 +22,7 @@ class MLS {
 		void shiftRegister ();
 		void setMArray ();
 		void printMArray();
+		int getMArrayByIndex(int i);
 		
 };
 
@@ -59,6 +60,14 @@ void MLS::setMArray() {
 		mArray.insert(mArray.end(), cur);
 		this->shiftRegister();
 	}
+}
+
+int MLS::getMArrayByIndex(int i) {
+	int mSize = pow(2, sizeP) - 1;
+	while (i < 0) {
+		i = mArray.size() - i;
+	}
+	return std::stoi(mArray[i % mSize], nullptr, 2);
 }
 
 void MLS::printMArray() {
