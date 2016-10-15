@@ -1,4 +1,7 @@
 #include <string>
+#include <vector>
+
+using namespace std;
 
 namespace utils {
 	const char* hexCharToBin(char c) {
