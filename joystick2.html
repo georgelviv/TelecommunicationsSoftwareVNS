@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <title>Joystick</title>
+</head>
+<body>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #2c3e50;
+    }
+    #joystick {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 10px solid #2980b9;
+      border-radius: 50%;
+      box-sizing: border-box;
+    }
+    #joystick-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #e74c3c;
+      box-sizing: border-box;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+    }
+    .info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #ecf0f1;
+    }
+  </style>
+
+  <div id="joystick">
+  </div>
+  <div id="joystick-inner"></div>
+  <div class="info">
+    <div>X: <span id="info_position_x"></span></div>
+    <div>Y: <span id="info_position_y"></span></div>
+  <div>
+
+  <script>
+    (function(c){try{document.createEvent("TouchEvent");return}catch(f){}var d={mousedown:"touchstart",mouseup:"touchend",mousemove:"touchmove"};var a=function(){for(var e in d){document.body.addEventListener(e,function(i){var h=b(d[i.type],i);i.target.dispatchEvent(h);var g=i.target["on"+d[i.type]];if(typeof g==="function"){g(i)}},false)}};var b=function(g,i){var h=document.createEvent("MouseEvents");h.initMouseEvent(g,i.bubbles,i.cancelable,i.view,i.detail,i.screenX,i.screenY,i.clientX,i.clientY,i.ctrlKey,i.altKey,i.shiftKey,i.metaKey,i.button,i.relatedTarget);return h};if(document.readyState==="complete"||document.readyState==="loaded"){a()}else{c.addEventListener("load",a,false)}})(window);
+  </script>
+
+  <script>
+    function initJoystick(onChange) {
+      var joysticEl = document.getElementById("joystick");
+      var joystickInnerEl = document.getElementById("joystick-inner");
+      var bodyEl = document.body;
+      var joystickR, joystickInnerInitialDimensions;
+      var size = 40;
+
+      setJoystick();
+      window.addEventListener('resize', debounce(setJoystick, 100));
+      joystickInnerEl.addEventListener("touchstart", handleStart, false);
+
+      function getInitialCoordinates(el) {
+        var rect = el.getBoundingClientRect();
+        return {
+          cTop: rect.top + (rect.height / 2),
+          cLeft: rect.left + (rect.width / 2)
+        };
+      }
+      
+
+      function handleStart() {
+        bodyEl.addEventListener("touchmove", handleMove, false);
+        bodyEl.addEventListener("touchend", handleEnd, false);
+        bodyEl.addEventListener("touchcancel", handleEnd, false);
+      }
+
+      function handleMove(e) {
+        var differY = e.clientY - joystickInnerInitialDimensions.cTop;
+        var differX = e.clientX - joystickInnerInitialDimensions.cLeft;
+        var currentR = Math.sqrt(differY * differY + differX * differX) + size;
+
+        var resTop = e.clientY;
+        var resLeft = e.clientX
+
+        if (currentR > joystickR) {
+          var degree = Math.atan(differY / differX);
+          y = joystickR * Math.sin(degree);
+          x = joystickR * Math.cos(degree);
+
+          resTop = joystickInnerInitialDimensions.cTop;
+          resLeft = joystickInnerInitialDimensions.cLeft
+          // resTop = (differY < 0) ? resTop += y : resTop -= y;
+          // resLeft = (differX < 0) ? resLeft -= x : resLeft += x;
+
+          if (differX > 0) {
+            resTop += y;
+            resLeft += x;
+          } else {
+            resTop -= y;
+            resLeft -= x;
+          }
+        }
+
+        joystickInnerEl.style.top = resTop + "px";
+        joystickInnerEl.style.left = resLeft + "px";
+
+        onChange && onChange({ x: e.clientX, y: e.clientY });
+      }
+
+      function setInitialPlace() {
+        joystickInnerEl.style.top = joystickInnerInitialDimensions.cTop + "px";
+        joystickInnerEl.style.left = joystickInnerInitialDimensions.cLeft + "px";
+      }
+
+      function handleEnd() {
+        setInitialPlace();
+
+        bodyEl.removeEventListener("touchmove", handleMove);
+        bodyEl.removeEventListener("touchend", handleEnd);
+        bodyEl.removeEventListener("touchcancel", handleEnd);
+      }
+
+      function setJoystick() {
+        var elDimensions = bodyEl.getBoundingClientRect();
+        var maxSize = Math.min(elDimensions.height, elDimensions.width) - 30;
+        joysticEl.style.width = maxSize + "px";
+        joysticEl.style.height = maxSize + "px";
+
+        joystickR = Math.floor(maxSize / 2) - size;
+        joystickInnerInitialDimensions = getInitialCoordinates(bodyEl);
+        setInitialPlace();
+      }
+
+      function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      }
+    }
+  </script>
+
+  <script>
+    var elX = document.getElementById('info_position_x');
+    var elY = document.getElementById('info_position_y');
+
+    initJoystick(function (position) {
+      elX.innerHTML = ~~position.x;
+      elY.innerHTML = ~~position.y;
+    });
+  </script>
+</body>
+</html>
