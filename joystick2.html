@@ -90,7 +90,7 @@
         var clientY = e.clientY  || e.touches[0].clientY;
         var differY = clientY - joystickInnerInitialDimensions.cTop;
         var differX = clientX - joystickInnerInitialDimensions.cLeft;
-        var currentR = Math.sqrt(differY * differY + differX * differX) + size;
+        var currentR = Math.sqrt(differY * differY + differX * differX);
 
         var resTop = clientY;
         var resLeft = clientX
@@ -102,10 +102,8 @@
 
           resTop = joystickInnerInitialDimensions.cTop;
           resLeft = joystickInnerInitialDimensions.cLeft
-          // resTop = (differY < 0) ? resTop += y : resTop -= y;
-          // resLeft = (differX < 0) ? resLeft -= x : resLeft += x;
 
-          if (differX > 0) {
+          if (differX >= 0) {
             resTop += y;
             resLeft += x;
           } else {
