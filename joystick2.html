@@ -19,7 +19,8 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
       border: 10px solid #2980b9;
       border-radius: 50%;
       box-sizing: border-box;
@@ -28,7 +29,8 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
       background-color: #e74c3c;
       box-sizing: border-box;
       border-radius: 50%;
@@ -84,12 +86,14 @@
       }
 
       function handleMove(e) {
-        var differY = e.clientY - joystickInnerInitialDimensions.cTop;
-        var differX = e.clientX - joystickInnerInitialDimensions.cLeft;
+        var clientX = e.clientX || e.touches[0].clientX;
+        var clientY = e.clientY  || e.touches[0].clientY;
+        var differY = clientY - joystickInnerInitialDimensions.cTop;
+        var differX = clientX - joystickInnerInitialDimensions.cLeft;
         var currentR = Math.sqrt(differY * differY + differX * differX) + size;
 
-        var resTop = e.clientY;
-        var resLeft = e.clientX
+        var resTop = clientY;
+        var resLeft = clientX
 
         if (currentR > joystickR) {
           var degree = Math.atan(differY / differX);
@@ -113,7 +117,7 @@
         joystickInnerEl.style.top = resTop + "px";
         joystickInnerEl.style.left = resLeft + "px";
 
-        onChange && onChange({ x: e.clientX, y: e.clientY });
+        onChange && onChange({ x: clientX, y: clientY });
       }
 
       function setInitialPlace() {
