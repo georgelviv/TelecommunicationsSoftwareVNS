@@ -31,12 +31,15 @@
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
               transform: translate(-50%, -50%);
-      background-color: #e74c3c;
+      background-color: #c0392b;
       box-sizing: border-box;
       border-radius: 50%;
       width: 60px;
       height: 60px;
       cursor: pointer;
+    }
+    #joystick-inner.active {
+      background-color: #e74c3c;
     }
     .info {
       position: absolute;
@@ -80,14 +83,16 @@
       
 
       function handleStart() {
+        joystickInnerEl.className = "active";
+
         bodyEl.addEventListener("touchmove", handleMove, false);
         bodyEl.addEventListener("touchend", handleEnd, false);
         bodyEl.addEventListener("touchcancel", handleEnd, false);
       }
 
       function handleMove(e) {
-        var clientX = e.clientX || e.touches[0].clientX;
-        var clientY = e.clientY  || e.touches[0].clientY;
+        var clientX = e.clientX !== undefined && e.clientX || e.touches[0].clientX;
+        var clientY = e.clientY !== undefined && e.clientY || e.touches[0].clientY;
         var differY = clientY - joystickInnerInitialDimensions.cTop;
         var differX = clientX - joystickInnerInitialDimensions.cLeft;
         var currentR = Math.sqrt(differY * differY + differX * differX);
@@ -115,7 +120,7 @@
         joystickInnerEl.style.top = resTop + "px";
         joystickInnerEl.style.left = resLeft + "px";
 
-        onChange && onChange({ x: clientX, y: clientY });
+        onChange && onChange({ x: clientX, y: clientY, joystickX: resTop, joystickY: resLeft });
       }
 
       function setInitialPlace() {
@@ -124,6 +129,7 @@
       }
 
       function handleEnd() {
+        joystickInnerEl.className = "";
         setInitialPlace();
 
         bodyEl.removeEventListener("touchmove", handleMove);
@@ -164,8 +170,8 @@
     var elY = document.getElementById('info_position_y');
 
     initJoystick(function (position) {
-      elX.innerHTML = ~~position.x;
-      elY.innerHTML = ~~position.y;
+      elX.innerHTML = ~~position.joystickX;
+      elY.innerHTML = ~~position.joystickY;
     });
   </script>
 </body>
