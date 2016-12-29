@@ -13,6 +13,10 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
+      -webkit-user-select: none;
+        -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
       background-color: #2c3e50;
     }
     #joystick {
@@ -63,6 +67,7 @@
 
   <script>
     function initJoystick(onChange) {
+      var MAX_VALUE = 255;
       var joysticEl = document.getElementById("joystick");
       var joystickInnerEl = document.getElementById("joystick-inner");
       var bodyEl = document.body;
@@ -90,9 +95,7 @@
         bodyEl.addEventListener("touchcancel", handleEnd, false);
       }
 
-      function handleMove(e) {
-        var clientX = e.clientX !== undefined && e.clientX || e.touches[0].clientX;
-        var clientY = e.clientY !== undefined && e.clientY || e.touches[0].clientY;
+      function setCoordinates(clientX, clientY) {
         var differY = clientY - joystickInnerInitialDimensions.cTop;
         var differX = clientX - joystickInnerInitialDimensions.cLeft;
         var currentR = Math.sqrt(differY * differY + differX * differX);
@@ -120,12 +123,45 @@
         joystickInnerEl.style.top = resTop + "px";
         joystickInnerEl.style.left = resLeft + "px";
 
-        onChange && onChange({ x: clientX, y: clientY, joystickX: resTop, joystickY: resLeft });
+        var centeredY = joystickInnerInitialDimensions.cTop - resTop;
+        var centeredX = resLeft - joystickInnerInitialDimensions.cLeft;
+        centeredX = convertToValue(centeredX, joystickR, MAX_VALUE);
+        centeredY = convertToValue(centeredY, joystickR, MAX_VALUE);
+
+        console.log(centeredX, joystickR, MAX_VALUE)
+
+        onChange && onChange({
+           x: clientX, 
+           y: clientY, 
+           joystickX: resTop, 
+           joystickY: resLeft,
+           centeredX: centeredX,
+           centeredY: centeredY
+        });
+      }
+
+      function convertToValue(currentValue, maximum, targetMaximum) {
+        return Math.round(currentValue / maximum * targetMaximum);
+      }
+
+      function handleMove(e) {
+        var clientX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+        var clientY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
+        setCoordinates(clientX, clientY);
       }
 
       function setInitialPlace() {
         joystickInnerEl.style.top = joystickInnerInitialDimensions.cTop + "px";
         joystickInnerEl.style.left = joystickInnerInitialDimensions.cLeft + "px";
+
+        onChange && onChange({
+           x: joystickInnerInitialDimensions.cTop, 
+           y: joystickInnerInitialDimensions.cLeft, 
+           joystickX: joystickInnerInitialDimensions.cTop, 
+           joystickY: joystickInnerInitialDimensions.cLeft,
+           centeredX: 0,
+           centeredY: 0
+        });
       }
 
       function handleEnd() {
@@ -170,8 +206,8 @@
     var elY = document.getElementById('info_position_y');
 
     initJoystick(function (position) {
-      elX.innerHTML = ~~position.joystickX;
-      elY.innerHTML = ~~position.joystickY;
+      elX.innerHTML = ~~position.centeredX;
+      elY.innerHTML = ~~position.centeredY;
     });
   </script>
 </body>
